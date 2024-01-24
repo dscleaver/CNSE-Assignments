@@ -73,11 +73,15 @@ func TestAddHardCodedItem(t *testing.T) {
 	//I will get you started, uncomment the lines below to add to the DB
 	//and ensure no errors:
 	//---------------------------------------------------------------
-	//err := DB.AddItem(item)
-	//assert.NoError(t, err, "Error adding item to DB")
+	err := DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
 
 	//TODO: Now finish the test case by looking up the item in the DB
 	//and making sure it matches the item that you put in the DB above
+	dbItem, err := DB.GetItem(item.Id)
+	assert.NoError(t, err, "Error getting item from DB")
+
+	assert.Equal(t, item, dbItem, "Items don't match")
 }
 
 func TestAddRandomStructItem(t *testing.T) {
@@ -90,6 +94,13 @@ func TestAddRandomStructItem(t *testing.T) {
 	assert.NoError(t, err, "Created fake item OK")
 
 	//TODO: Complete the test
+	err = DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
+
+	dbItem, err := DB.GetItem(item.Id)
+	assert.NoError(t, err, "Error getting item from DB")
+
+	assert.Equal(t, item, dbItem, "Items don't match")
 }
 
 func TestAddRandomItem(t *testing.T) {
@@ -101,18 +112,122 @@ func TestAddRandomItem(t *testing.T) {
 	}
 
 	t.Log("Testing Adding an Item with Random Fields: ", item)
+	err := DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
 
-}
+	dbItem, err := DB.GetItem(item.Id)
+	assert.NoError(t, err, "Error getting item from DB")
 
-// TODO: Please delete this test from your submission, it does not do anything
-// but i wanted to demonstrate how you can starting shelling out your tests
-// and then implment them later.  The go testing framework provides a
-// Skip() function that just tells the testing framework to skip or ignore
-// this test function
-func TestAddPlaceholderTest(t *testing.T) {
-	t.Skip("Placeholder test not implemented yet")
+	assert.Equal(t, item, dbItem, "Items don't match")
 }
 
 //TODO: Create additional tests to showcase the correct operation of your program
 //for example getting an item, getting all items, updating items, and so on. Be
 //creative here.
+
+func TestAddItemWithExistingId(t *testing.T) {
+	item := db.ToDoItem{
+		Id:     2,
+		Title:  "This is a test case item",
+		IsDone: false,
+	}
+
+	err := DB.AddItem(item)
+
+	assert.EqualError(t, err, "Item id already exists in db")
+}
+
+func TestGetItem(t *testing.T) {
+	expectedItem := db.ToDoItem{
+		Id:     1,
+		Title:  "Learn Go / GoLang",
+		IsDone: false,
+	}
+
+	actualItem, err := DB.GetItem(1)
+	assert.NoError(t, err, "Error getting item.")
+
+	assert.Equal(t, expectedItem, actualItem)
+}
+
+func TestGetItemNoItem(t *testing.T) {
+	_, err := DB.GetItem(10)
+
+	assert.EqualError(t, err, "Id not found in db.")
+}
+
+func TestDeleteItemNoItem(t *testing.T) {
+	err := DB.DeleteItem(10)
+
+	assert.EqualError(t, err, "Item id does not exist in db")
+}
+
+func TestDeleteItem(t *testing.T) {
+	item := db.ToDoItem{
+		Id:     998,
+		Title:  "This is a test case item",
+		IsDone: false,
+	}
+
+	err := DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item.")
+
+	err = DB.DeleteItem(998)
+	assert.NoError(t, err, "Error deleting item")
+
+	_, err = DB.GetItem(998)
+	assert.EqualError(t, err, "Id not found in db.")
+}
+
+func TestUpdateItemWhenMissing(t *testing.T) {
+	updatedItem := db.ToDoItem{
+		Id:     10,
+		Title:  "Learn Go / GoLang",
+		IsDone: true,
+	}
+	err := DB.UpdateItem(updatedItem)
+	assert.EqualError(t, err, "Item id does not exist in db")
+}
+
+func TestUpdateItem(t *testing.T) {
+	updatedItem := db.ToDoItem{
+		Id:     1,
+		Title:  "Learn Go / GoLang",
+		IsDone: true,
+	}
+	err := DB.UpdateItem(updatedItem)
+	assert.NoError(t, err, "Error updating item.")
+
+	actualItem, err := DB.GetItem(1)
+	assert.NoError(t, err, "Error getting item.")
+	assert.Equal(t, updatedItem, actualItem, "Items don't match after update.")
+}
+
+func TestGetAllItems(t *testing.T) {
+	items, err := DB.GetAllItems()
+	assert.NoError(t, err, "Error occurred getting all items")
+
+	assert.GreaterOrEqual(t, len(items), 4, "There should be at least 4 items.")
+
+	for id := 1; id <= 4; id++ {
+		item, err := DB.GetItem(id)
+		assert.NoErrorf(t, err, "Error getting item %d", id)
+		assert.Containsf(t, items, item, "List does not contain item %d", id)
+	}
+}
+
+func TestChangeItemDoneStatusWhenItemMissing(t *testing.T) {
+	err := DB.ChangeItemDoneStatus(10, true)
+	assert.EqualError(t, err, "Id not found in db.")
+}
+
+func TestChangeItemDoneStatus(t *testing.T) {
+	err := DB.ChangeItemDoneStatus(1, true)
+	assert.NoError(t, err, "No error updating item.")
+
+	item, err := DB.GetItem(1)
+	assert.NoError(t, err, "Error getting item.")
+
+	assert.Equal(t, true, item.IsDone, "Item status not updated.")
+
+}

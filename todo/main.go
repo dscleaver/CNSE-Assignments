@@ -46,18 +46,25 @@ const (
 //		 flags.  The flag package is not very flexible and can lead to
 //		 some confusing code.
 
-//			 REQUIRED:     Study the code below, and make sure you understand
-//						   how it works.  Go online and readup on how the
-//						   flag package works.  Then, write a nice comment
-//				  		   block to document this function that highights that
-//						   you understand how it works.
+//					 REQUIRED:     Study the code below, and make sure you understand
+//								   how it works.  Go online and readup on how the
+//								   flag package works.  Then, write a nice comment
+//						  		   block to document this function that highights that
+//								   you understand how it works.
 //
-//			 EXTRA CREDIT: The best CLI and command line processor for
-//						   go is called Cobra.  Refactor this function to
-//						   use it.  See github.com/spf13/cobra for information
-//						   on how to use it.
+//					 EXTRA CREDIT: The best CLI and command line processor for
+//								   go is called Cobra.  Refactor this function to
+//								   use it.  See github.com/spf13/cobra for information
+//								   on how to use it.
 //
-//	 YOUR ANSWER: <GOES HERE>
+//			 YOUR ANSWER: Sets up all of the flag options, placing the argument associated
+//		               the flag into the variable for that flag.
+//		               If no flags are set it returns an error.
+//		               Then it looks at every flag that was passed in in lexographic order
+//		               to determine the operation that is being requested. Only the last
+//	                command in the alphabet will be respected.
+//		               If no valid option is provided, then the usage is printed and an
+//		               error is returned.
 func processCmdLineFlags() (AppOptType, error) {
 	flag.StringVar(&dbFileNameFlag, "db", "./data/todo.json", "Name of the database file")
 	flag.BoolVar(&restoreDbFlag, "restore", false, "Restore the database from the backup file")
@@ -109,7 +116,11 @@ func processCmdLineFlags() (AppOptType, error) {
 		case "s":
 			//For extra credit you will need to change some things here
 			//and also in main under the CHANGE_ITEM_STATUS case
-			appOpt = CHANGE_ITEM_STATUS
+			if appOpt == QUERY_DB_ITEM {
+				appOpt = CHANGE_ITEM_STATUS
+			} else {
+				appOpt = INVALID_APP_OPT
+			}
 		default:
 			appOpt = INVALID_APP_OPT
 		}
@@ -213,7 +224,11 @@ func main() {
 		//For the CHANGE_ITEM_STATUS extra credit you will also
 		//need to add some code here
 		fmt.Println("Running CHANGE_ITEM_STATUS...")
-		fmt.Println("Not implemented yet, but it can be for extra credit")
+		err := todo.ChangeItemDoneStatus(queryFlag, itemStatusFlag)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			break
+		}
 		fmt.Println("Ok")
 	default:
 		fmt.Println("INVALID_APP_OPT")
