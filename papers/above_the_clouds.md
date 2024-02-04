@@ -21,8 +21,8 @@ any changes to how it operates.
 [[1](https://www.cloudzero.com/blog/lift-and-shift/)] This treats the cloud just
 like a new datacenter and is very similar to simply leaving the water running,
 or not turning out lights when you aren't using them. You will spend more money,
-but the benefits can include moving faster to the cloud or getting familiar with
-the cloud.
+but the benefits can include moving faster to the cloud or getting more comfortable
+with using the cloud.
 
 Cost optimizations in the cloud can lead software engineers to make odd
 architectural decisions to support lower cost cloud options. For example, it costs 
