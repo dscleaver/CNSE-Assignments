@@ -1,4 +1,4 @@
-module drexel.edu/todo
+module drexel.edu/voter
 
 go 1.21
 
