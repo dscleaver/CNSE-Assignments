@@ -176,9 +176,9 @@ I chose in each of the resources to keep the various id properties in the HAL re
 
 ### Example
 
-These APIs are now linked and the user can easily navigate from a voter's vote history to the poll that the vote was for by simply following the `poll` relation available in the links of the voting history. Additionally, when looking at a vote the API offers direct links to the Voter, the Poll, and the Option that was chosen. The user never needs to understand how to construct these links to navigate between the APIs. 
+These APIs are now linked and the user can easily navigate from a voter's vote history to the poll that the vote was for by simply following the `poll` relation available in the links of the voting history. When looking at a vote, the API offers direct links to the Voter, the Poll, and the Option that was chosen. The user never needs to understand how to construct these links to navigate between the APIs. 
 
-The homepage provides a starting point for the user to begin browsing through these APIs as well. It is highly cacheable, and the only URL required to begin working with the APIs. No other urls would ever need to be created by the user allowing the individual APIs to easily be colocated or distributed across multiple hosts.
+The homepage also provides a starting point for the user to begin browsing through these APIs. It is highly cacheable, and the only URL required to begin working with the APIs. No other urls would ever need to be created by the user, allowing the individual APIs to easily be colocated or distributed across multiple hosts.
 
 ### References
 
